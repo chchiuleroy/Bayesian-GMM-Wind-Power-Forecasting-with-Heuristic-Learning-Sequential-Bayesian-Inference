@@ -293,7 +293,7 @@ April: EB 1.3272 vs Weibull 1.3594 (−2.4%).
 
 ### BIC Model Selection (same calendar month 2016–2020 training data)
 
-| Month | $\Delta$BIC K=2 | $\Delta$BIC K=3 | BIC winner |
+| Month | ΔBIC K=2 | ΔBIC K=3 | BIC winner |
 |-------|---------------|---------------|-----------|
 | Jan | +295.6 | +216.1 | Weibull |
 | **Feb** | **−244.6 ★** | **−133.2 ★** | **LN-Mix** (bimodal calm/storm) |
