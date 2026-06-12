@@ -24,7 +24,7 @@ to power output.  While accurate, XGBoost provides:
 (Normal-Inverse-Wishart conjugate posterior).  The conditional distribution $p(P \mid v)$
 is then derived analytically:
 
-$$p(P \mid v) = \sum_{k=1}^{K} \pi_k(v) \cdot \mathcal{N}\!\left(P;\;\mu_{P|k}(v),\;\sigma_{P|k}^2\right)$$
+$$p(P \mid v) = \sum_{k=1}^{K} \pi_k(v) \cdot \mathcal{N}\left(P; \mu_{P|k}(v), \sigma_{P|k}^2\right)$$
 
 Each component $k$ captures a distinct operating regime (e.g. below cut-in, ramp region,
 rated production, curtailment).  Full posterior uncertainty is propagated through to
@@ -107,7 +107,7 @@ Half-Cauchy achieves **~40% higher ESS** (209 vs 150 for $\mu_1$) due to better 
 in the scale parameter.
 
 The Half-Cauchy is implemented via the auxiliary variable trick (Makalic & Schmidt 2016):
-$$\sigma_k^2 \mid \xi_k \sim \text{IG}(0.5,\; 1/\xi_k), \qquad \xi_k \sim \text{IG}(0.5,\; 1/s^2)$$
+$$\sigma_k^2 \mid \xi_k \sim \text{IG}(0.5, 1/\xi_k), \qquad \xi_k \sim \text{IG}(0.5, 1/s^2)$$
 which keeps the sampler fully Gibbs-conjugate while placing a heavier tail on $\sigma_k$.
 
 ---
@@ -162,7 +162,7 @@ of previous months.
 **Our solution**: Sequential Bayesian learning where the posterior from month $t$
 becomes an informative prior for month $t+1$:
 
-$$\underbrace{p(\theta \mid y_{1:t})}_{\text{posterior month }t} \;\longrightarrow\;
+$$\underbrace{p(\theta \mid y_{1:t})}_{\text{posterior month }t} \longrightarrow
 \underbrace{\pi_{t+1}(\theta)}_{\text{prior month }t+1}$$
 
 Hyperparameter transfer uses Normal-IG moment matching
@@ -222,12 +222,12 @@ Hyperparameter transfer uses Normal-IG moment matching
 
 Wind speed $v$ is modelled as a $K$-component Log-Normal mixture in log-space $u = \log v$:
 
-$$p(v) = \sum_{k=1}^{K} w_k \cdot \mathcal{LN}(v;\, \mu_k,\, \sigma_k^2)$$
+$$p(v) = \sum_{k=1}^{K} w_k \cdot \mathcal{LN}(v; \mu_k, \sigma_k^2)$$
 
 Posterior inference uses **Gibbs sampling** with Normal-Inverse-Gamma conjugate priors:
 
-$$\sigma_k^2 \mid \mathbf{u},\, z \sim \text{IG}(a_n,\, b_n), \qquad
-\mu_k \mid \sigma_k^2,\, \mathbf{u},\, z \sim \mathcal{N}\!\left(m_n,\, \frac{\sigma_k^2}{\kappa_n}\right)$$
+$$\sigma_k^2 \mid \mathbf{u}, z \sim \text{IG}(a_n, b_n), \qquad
+\mu_k \mid \sigma_k^2, \mathbf{u}, z \sim \mathcal{N}\left(m_n, \frac{\sigma_k^2}{\kappa_n}\right)$$
 
 where $\kappa_n = \kappa_0 + n_k$, $m_n = \frac{\kappa_0 \mu_0 + n_k \bar{u}_k}{\kappa_n}$,
 $a_n = a_0 + n_k/2$, $b_n = b_0 + S_k/2 + \frac{\kappa_0 n_k (\bar{u}_k - \mu_0)^2}{2\kappa_n}$.
@@ -237,17 +237,17 @@ $a_n = a_0 + n_k/2$, $b_n = b_0 + S_k/2 + \frac{\kappa_0 n_k (\bar{u}_k - \mu_0)
 The joint distribution $p(v, P)$ is fitted with a Normal-Inverse-Wishart conjugate Gibbs sampler.
 The conditional power distribution is:
 
-$$p(P \mid v) = \sum_{k=1}^{K} \pi_k(v) \cdot \mathcal{N}\!\left(P;\; \mu_{P|k}(v),\; \sigma_{P|k}^2\right)$$
+$$p(P \mid v) = \sum_{k=1}^{K} \pi_k(v) \cdot \mathcal{N}\left(P; \mu_{P|k}(v), \sigma_{P|k}^2\right)$$
 
 $$\mu_{P|k}(v) = \mu_{P,k} + \frac{\Sigma_{vP,k}}{\Sigma_{vv,k}}(v - \mu_{v,k}), \qquad
 \sigma_{P|k}^2 = \Sigma_{PP,k} - \frac{\Sigma_{vP,k}^2}{\Sigma_{vv,k}}$$
 
 ### 3. Daily State-Space Model
 
-Daily EM parameters $\theta_d = [\text{logit}(w_{1,d}),\, \mu_{1,d},\, \mu_{2,d}]$
+Daily EM parameters $\theta_d = [\text{logit}(w_{1,d}), \mu_{1,d}, \mu_{2,d}]$
 evolve as a diagonal AR(1) SSM estimated by Shumway–Stoffer EM:
 
-$$\theta_d = \text{diag}(\mathbf{a})\,\theta_{d-1} + \varepsilon_d, \quad
+$$\theta_d = \text{diag}(\mathbf{a}) \theta_{d-1} + \varepsilon_d, \quad
 y_d = \theta_d + \eta_d$$
 
 Fitted AR coefficients: $a_\text{logit(w)} = -0.099$ (near white noise),
@@ -258,10 +258,10 @@ $a_{\mu_1} = 0.990$, $a_{\mu_2} = 0.988$ (near random walk — high wind-speed p
 See **Problem 5** above for the four prior modes.  The Half-Cauchy prior on $\sigma_k$
 is the recommended default for new datasets where the variance of each component is uncertain:
 
-$$\sigma_k \sim \text{HalfCauchy}(0,\, 2.5) \iff
+$$\sigma_k \sim \text{HalfCauchy}(0, 2.5) \iff
 \begin{cases}
-\sigma_k^2 \mid \xi_k \sim \text{IG}(0.5,\; 1/\xi_k) \\
-\xi_k \sim \text{IG}(0.5,\; 1/s^2)
+\sigma_k^2 \mid \xi_k \sim \text{IG}(0.5, 1/\xi_k) \\
+\xi_k \sim \text{IG}(0.5, 1/s^2)
 \end{cases}$$
 
 ### 5. Evaluation — CRPS
